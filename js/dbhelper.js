@@ -1,12 +1,22 @@
 /**
  * Common database helper functions.
  */
-class DBHelper {
+ class DBHelper {
+     static registerServiceWorker() {
+         // checks if browser supports service workers
+         if (!navigator.serviceWorker) return;
+         // Register service worker on load
+         window.addEventListener('load', function() {
+             navigator.serviceWorker.register('/sw.js', {
+              scope: '/'
+             }).then(function(reg) {
+                 console.log("Service Worker Registered with scope: ", reg.scope);
+             }).catch(function(err) {
+                 console.log("Error in Service Worker Registration: ", err);
+             });
+         });
+     }
 
-  /**
-   * Database URL.
-   * Change this to restaurants.json file location on your server.
-   */
   static get DATABASE_URL() {
     const port = 8000 // Change this to your server port
     return `http://localhost:${port}/data/restaurants.json`;
@@ -153,11 +163,15 @@ class DBHelper {
     return (`/img/${restaurant.photograph}`);
   }
 
+  static imageAltForRestaurant(restaurant) {
+    return (`${restaurant.alt}`);
+  }
+
   /**
    * Map marker for a restaurant.
    */
    static mapMarkerForRestaurant(restaurant, map) {
-    // https://leafletjs.com/reference-1.3.0.html#marker  
+    // https://leafletjs.com/reference-1.3.0.html#marker
     const marker = new L.marker([restaurant.latlng.lat, restaurant.latlng.lng],
       {title: restaurant.name,
       alt: restaurant.name,
@@ -165,7 +179,7 @@ class DBHelper {
       })
       marker.addTo(newMap);
     return marker;
-  } 
+  }
   /* static mapMarkerForRestaurant(restaurant, map) {
     const marker = new google.maps.Marker({
       position: restaurant.latlng,
@@ -178,4 +192,3 @@ class DBHelper {
   } */
 
 }
-
